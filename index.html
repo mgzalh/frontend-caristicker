@@ -78,19 +78,19 @@
   </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
   <!-- ===== NAVBAR ===== -->
-  <div class="sticky top-4 z-50 px-4 mb-4">
-    <nav class="max-w-5xl mx-auto bg-slate-950/80 backdrop-blur-md border border-slate-800 rounded-full px-6 md:px-8 py-2 md:py-3 flex items-center justify-between shadow-2xl">
+  <div class="sticky top-2 sm:top-4 z-50 px-2 sm:px-4 mb-4">
+    <nav class="max-w-5xl mx-auto bg-slate-950/80 backdrop-blur-md border border-slate-800 rounded-full px-4 sm:px-6 md:px-8 py-2 flex items-center justify-between shadow-2xl">
       <div class="flex items-center">
-        <a href="index.html" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent drop-shadow-sm">
+        <a href="index.html" class="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent drop-shadow-sm">
           CariStiker
         </a>
       </div>
-      <div class="flex items-center space-x-3 md:space-x-6">
-        <a href="index.html" class="text-slate-300 hover:text-white px-2 py-2 rounded-md text-sm md:text-base font-medium transition-colors">Beranda</a>
-        <a href="create-sticker.html" class="bg-indigo-600 text-white hover:bg-indigo-500 px-5 py-2 md:px-6 md:py-2.5 rounded-full text-sm md:text-base font-semibold shadow-lg shadow-indigo-900/20 transition-all active:scale-95">Buat Stiker</a>
+      <div class="flex items-center space-x-1 sm:space-x-3 md:space-x-6">
+        <a href="index.html" class="text-slate-300 hover:text-white px-2 py-2 rounded-md text-[13px] sm:text-sm md:text-base font-medium transition-colors">Beranda</a>
+        <a href="create-sticker.html" class="bg-indigo-600 text-white hover:bg-indigo-500 px-4 py-1.5 sm:px-5 sm:py-2 md:px-6 md:py-2.5 rounded-full text-[13px] sm:text-sm md:text-base font-semibold shadow-lg shadow-indigo-900/20 transition-all active:scale-95 whitespace-nowrap">Buat Stiker</a>
       </div>
     </nav>
   </div>
@@ -150,8 +150,9 @@
     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50">
   </div>
 
-  <footer class="text-center text-xs text-slate-600 pb-8">
-    Dibuat untuk MVP — stateless, tanpa database. Hasil gambar bersumber dari pihak ketiga di internet.
+  <footer class="text-center text-[11px] sm:text-xs text-slate-500 py-6 sm:py-8 border-t border-slate-800/50 mt-auto px-4">
+    <p>CariStiker MVP — stateless, tanpa database.</p>
+    <p class="mt-1">Hasil gambar bersumber dari pihak ketiga di internet.</p>
   </footer>
 
   <script>
