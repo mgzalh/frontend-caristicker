@@ -224,18 +224,18 @@
 
       // Overlay aksi yang muncul saat hover
       const overlay = document.createElement("div");
-      overlay.className = "absolute inset-0 bg-black/0 group-hover:bg-black/55 transition flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100";
+      overlay.className = "absolute inset-0 bg-black/0 group-hover:bg-black/55 transition flex flex-row sm:flex-col items-center justify-center gap-1.5 sm:gap-2 opacity-0 group-hover:opacity-100 flex-wrap p-1";
 
       const openBtn = document.createElement("a");
       openBtn.href = item.image_url;
       openBtn.target = "_blank";
       openBtn.rel = "noopener noreferrer";
-      openBtn.textContent = "🔗 Buka Gambar";
-      openBtn.className = "bg-white text-slate-900 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-slate-200 transition";
+      openBtn.innerHTML = "🔗<span class='hidden sm:inline'> Buka</span>";
+      openBtn.className = "bg-white text-slate-900 text-xs sm:text-sm font-semibold p-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-slate-200 transition";
 
       const copyBtn = document.createElement("button");
-      copyBtn.textContent = "📋 Copy Image URL";
-      copyBtn.className = "bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-indigo-500 transition";
+      copyBtn.innerHTML = "📋<span class='hidden sm:inline'> Copy</span>";
+      copyBtn.className = "bg-indigo-600 text-white text-xs sm:text-sm font-semibold p-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-indigo-500 transition";
       copyBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         try {
@@ -247,8 +247,8 @@
       });
 
       const downloadBtn = document.createElement("button");
-      downloadBtn.textContent = "⬇️ Unduh";
-      downloadBtn.className = "bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-amber-500 transition";
+      downloadBtn.innerHTML = "⬇️<span class='hidden sm:inline'> Unduh</span>";
+      downloadBtn.className = "bg-amber-600 text-white text-xs sm:text-sm font-semibold p-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-amber-500 transition";
       downloadBtn.addEventListener("click", (e) => {
         e.preventDefault();
         const downloadUrl = `${API_BASE_URL}/download?url=${encodeURIComponent(item.image_url)}`;
@@ -256,8 +256,8 @@
       });
 
       const scoreBadge = document.createElement("span");
-      scoreBadge.textContent = `Cocok ${item.score}%`;
-      scoreBadge.className = "absolute top-2 right-2 bg-emerald-600/90 text-[11px] font-bold px-2 py-1 rounded-full";
+      scoreBadge.innerHTML = `<span class='hidden sm:inline'>Cocok </span>${item.score}%`;
+      scoreBadge.className = "absolute top-1 right-1 sm:top-2 sm:right-2 bg-emerald-600/90 text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full";
 
       overlay.appendChild(openBtn);
       overlay.appendChild(copyBtn);
