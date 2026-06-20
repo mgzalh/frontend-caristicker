@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Sticker Pack — CariSticker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- JSZip untuk membuat file .wastickers -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.35s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .toast {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- ===== NAVBAR ===== -->
+  <div class="sticky top-4 z-50 px-4 mb-4">
+    <nav class="max-w-5xl mx-auto bg-slate-950/80 backdrop-blur-md border border-slate-800 rounded-full px-6 md:px-8 py-2 md:py-3 flex items-center justify-between shadow-2xl">
+      <div class="flex items-center">
+        <a href="index.html" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent drop-shadow-sm">
+          CariStiker
+        </a>
+      </div>
+      <div class="flex items-center space-x-3 md:space-x-6">
+        <a href="index.html" class="text-slate-300 hover:text-white px-2 py-2 rounded-md text-sm md:text-base font-medium transition-colors">Beranda</a>
+        <a href="create-sticker.html" class="bg-indigo-600 text-white hover:bg-indigo-500 px-5 py-2 md:px-6 md:py-2.5 rounded-full text-sm md:text-base font-semibold shadow-lg shadow-indigo-900/20 transition-all active:scale-95">Buat Stiker</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="flex-1 px-4 py-8 sm:py-10 max-w-5xl mx-auto w-full fade-in">
+    <div class="text-center mb-8">
+      <h1
+        class="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-300 bg-clip-text text-transparent">
+        Sticker Pack Maker
+      </h1>
+      <p class="mt-3 text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
+        Kumpulkan gambar menjadi satu Sticker Pack. Semua diproses di browser, tidak butuh server!
+      </p>
+    </div>
+
+    <!-- Info Box -->
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-8 flex flex-col md:flex-row gap-6 justify-between items-center shadow-lg">
+      <div class="space-y-4 flex-1 w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="pack-name" class="block text-sm font-medium text-slate-300 mb-1">Nama Pack</label>
+            <input type="text" id="pack-name" placeholder="Contoh: Kucing Kocak"
+              class="w-full rounded-lg bg-slate-950 border border-slate-700 focus:border-indigo-500 outline-none px-4 py-2 text-sm text-white transition" />
+          </div>
+          <div>
+            <label for="pack-author" class="block text-sm font-medium text-slate-300 mb-1">Nama Pembuat</label>
+            <input type="text" id="pack-author" placeholder="Contoh: Nama Anda"
+              class="w-full rounded-lg bg-slate-950 border border-slate-700 focus:border-indigo-500 outline-none px-4 py-2 text-sm text-white transition" />
+          </div>
+        </div>
+        <div class="text-xs text-slate-400 flex items-center gap-2">
+          <span id="req-tray" class="text-rose-400">✖ 1 Tray Icon</span>
+          <span id="req-stickers" class="text-rose-400">✖ Min 3 Stiker</span>
+          <span id="req-info" class="text-rose-400">✖ Nama & Pembuat</span>
+        </div>
+      </div>
+
+      <div class="w-full md:w-auto shrink-0">
+        <button id="download-btn"
+          class="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-95 transition px-6 py-3 font-bold text-sm shadow-lg shadow-emerald-900/30 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled>
+          Unduh Pack (.wastickers)
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid Stiker -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
+      <h2 class="text-lg font-semibold text-slate-200 mb-1">Daftar Stiker</h2>
+      <p class="text-xs text-slate-500 mb-6">Klik kotak kosong untuk menambahkan gambar. Tray icon adalah gambar ikon
+        utama pack.</p>
+
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4" id="sticker-grid">
+        <!-- JS will populate slots -->
+      </div>
+    </div>
+
+    <!-- Cara Penggunaan / Tutorial -->
+    <div class="mt-10 bg-slate-900 border border-slate-800 rounded-xl p-6 sm:p-8 shadow-xl">
+      <h3 class="text-xl font-bold text-slate-100 mb-6 text-center sm:text-left">Cara Menambahkan ke WhatsApp</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2">
+
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 relative shadow-inner">
+          <div
+            class="absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white font-bold rounded-xl flex items-center justify-center border-4 border-slate-900 shadow-lg">
+            1</div>
+          <h4 class="font-bold text-slate-200 mb-2 mt-1">Buat & Unduh Pack</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">Isi semua persyaratan grid stiker di atas, lalu tekan tombol
+            <span class="text-emerald-400 font-semibold text-xs bg-emerald-400/10 px-2 py-0.5 rounded">Unduh Pack
+              (.wastickers)</span>.</p>
+        </div>
+
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 relative shadow-inner">
+          <div
+            class="absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white font-bold rounded-xl flex items-center justify-center border-4 border-slate-900 shadow-lg">
+            2</div>
+          <h4 class="font-bold text-slate-200 mb-2 mt-1">Gunakan Aplikasi Tambahan</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">Pastikan HP Anda sudah menginstal aplikasi pembaca stiker,
+            seperti <a href="https://play.google.com/store/apps/details?id=com.marsvard.stickermakerforwhatsapp"
+              target="_blank" class="text-indigo-400 hover:text-indigo-300 transition font-semibold">Sticker Maker</a>
+            (di Android/iOS).</p>
+        </div>
+
+        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 relative shadow-inner">
+          <div
+            class="absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white font-bold rounded-xl flex items-center justify-center border-4 border-slate-900 shadow-lg">
+            3</div>
+          <h4 class="font-bold text-slate-200 mb-2 mt-1">Buka dan Import</h4>
+          <p class="text-sm text-slate-400 leading-relaxed">Cari file `.wastickers` di folder Download HP Anda, klik
+            file tersebut, dan aplikasi akan otomatis menampilkan menu **Add to WhatsApp**.</p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Input file tersembunyi -->
+  <input type="file" id="file-input" accept="image/*" class="hidden" />
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast"
+    class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50">
+  </div>
+
+  <footer class="text-center text-xs text-slate-600 py-8 border-t border-slate-800/50 mt-auto">
+    CariSticker MVP — Fitur pembuatan stiker.
+  </footer>
+
+  <script>
+    const MAX_STICKERS = 30;
+    // Index 0 = Tray Icon (96x96 PNG), Index 1-30 = Stickers (512x512 WebP)
+    let stickers = new Array(MAX_STICKERS + 1).fill(null);
+    let currentSlot = null;
+
+    const grid = document.getElementById('sticker-grid');
+    const fileInput = document.getElementById('file-input');
+    const packName = document.getElementById('pack-name');
+    const packAuthor = document.getElementById('pack-author');
+    const downloadBtn = document.getElementById('download-btn');
+    const toast = document.getElementById('toast');
+
+    const reqTray = document.getElementById('req-tray');
+    const reqStickers = document.getElementById('req-stickers');
+    const reqInfo = document.getElementById('req-info');
+
+    function showToast(message, isError = false) {
+      toast.textContent = message;
+      toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50 toast ${isError ? 'bg-rose-600' : 'bg-emerald-600'} text-white`;
+      setTimeout(() => { toast.classList.add("hidden"); }, 3500);
+    }
+
+    function initGrid() {
+      for (let i = 0; i <= MAX_STICKERS; i++) {
+        const slot = document.createElement('div');
+        slot.className = "aspect-square rounded-xl border-2 border-dashed border-slate-700 bg-slate-800/50 hover:bg-slate-700 transition cursor-pointer flex flex-col items-center justify-center overflow-hidden relative group";
+
+        const label = document.createElement('span');
+        label.className = "text-slate-500 text-xs sm:text-sm font-medium z-10 pointer-events-none text-center px-1";
+        label.innerHTML = i === 0 ? "🌟<br/>Tray Icon" : `Stiker ${i}`;
+        if (i === 0) slot.classList.add("border-amber-600/50"); // bedakan warna untuk tray
+
+        const img = document.createElement('img');
+        img.className = "absolute inset-0 w-full h-full object-contain p-1 sm:p-2 hidden z-0 pointer-events-none";
+
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = "✕";
+        delBtn.className = "absolute top-1 right-1 bg-rose-600 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition z-20 hover:bg-rose-500";
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          stickers[i] = null;
+          img.src = "";
+          img.classList.add('hidden');
+          label.classList.remove('hidden');
+          checkRequirements();
+        };
+
+        slot.appendChild(label);
+        slot.appendChild(img);
+        slot.appendChild(delBtn);
+
+        slot.onclick = () => {
+          currentSlot = i;
+          fileInput.click();
+        };
+
+        grid.appendChild(slot);
+      }
+    }
+
+    function checkRequirements() {
+      const hasTray = stickers[0] !== null;
+      const stickerCount = stickers.slice(1).filter(s => s !== null).length;
+      const hasInfo = packName.value.trim() !== '' && packAuthor.value.trim() !== '';
+
+      reqTray.innerHTML = hasTray ? "✔ 1 Tray Icon" : "✖ 1 Tray Icon";
+      reqTray.className = hasTray ? "text-emerald-400" : "text-rose-400";
+
+      reqStickers.innerHTML = stickerCount >= 3 ? `✔ ${stickerCount} Stiker` : `✖ Min 3 Stiker (${stickerCount}/3)`;
+      reqStickers.className = stickerCount >= 3 ? "text-emerald-400" : "text-rose-400";
+
+      reqInfo.innerHTML = hasInfo ? "✔ Info Lengkap" : "✖ Info Belum Lengkap";
+      reqInfo.className = hasInfo ? "text-emerald-400" : "text-rose-400";
+
+      if (hasTray && stickerCount >= 3 && hasInfo) {
+        downloadBtn.disabled = false;
+      } else {
+        downloadBtn.disabled = true;
+      }
+    }
+
+    packName.addEventListener('input', checkRequirements);
+    packAuthor.addEventListener('input', checkRequirements);
+
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const image = new Image();
+        image.onload = () => {
+          const isTray = currentSlot === 0;
+          const size = isTray ? 96 : 512;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+
+          const minDim = Math.min(image.width, image.height);
+          const startX = (image.width - minDim) / 2;
+          const startY = (image.height - minDim) / 2;
+
+          ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(image, startX, startY, minDim, minDim, 0, 0, size, size);
+
+          // Format tray = png, format stiker = webp
+          const format = isTray ? "image/png" : "image/webp";
+          const dataUrl = canvas.toDataURL(format, 1.0);
+
+          stickers[currentSlot] = dataUrl;
+
+          const slotDiv = grid.children[currentSlot];
+          const imgEl = slotDiv.querySelector('img');
+          const labelEl = slotDiv.querySelector('span');
+
+          imgEl.src = dataUrl;
+          imgEl.classList.remove('hidden');
+          labelEl.classList.add('hidden');
+
+          checkRequirements();
+        };
+        image.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = ""; // reset input file
+    };
+
+    downloadBtn.onclick = async () => {
+      downloadBtn.disabled = true;
+      downloadBtn.innerText = "Membuat Pack...";
+
+      try {
+        const zip = new JSZip();
+
+        // WhatsApp Sticker Pack Metadata
+        zip.file("title.txt", packName.value.trim());
+        zip.file("author.txt", packAuthor.value.trim());
+
+        // Tray icon harus berformat .png untuk beberapa aplikasi pihak ketiga
+        if (stickers[0]) {
+          const base64Tray = stickers[0].split(',')[1];
+          zip.file("tray.png", base64Tray, { base64: true });
+        }
+
+        // Iterasi stiker-stiker
+        let counter = 1;
+        for (let i = 1; i <= MAX_STICKERS; i++) {
+          if (stickers[i]) {
+            const base64Sticker = stickers[i].split(',')[1];
+            // Format wajib WebP untuk stiker aktual
+            zip.file(`${counter}.webp`, base64Sticker, { base64: true });
+            counter++;
+          }
+        }
+
+        // Generate Zip
+        const content = await zip.generateAsync({ type: "blob" });
+        const safeName = packName.value.trim().replace(/\s+/g, '_') || "sticker_pack";
+
+        // Trigger download file .wastickers
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = `${safeName}.wastickers`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        showToast("Sticker Pack diunduh! Buka file di HP Anda (Pilih aplikasi Sticker Maker).");
+
+      } catch (err) {
+        console.error(err);
+        showToast("Gagal membuat sticker pack.", true);
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.innerText = "Unduh Pack (.wastickers)";
+      }
+    };
+
+    // Inisialisasi saat pertama kali load
+    initGrid();
+    checkRequirements();
+  </script>
+</body>
+
+</html>
